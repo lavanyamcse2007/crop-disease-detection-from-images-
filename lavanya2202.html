@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+      content="#176b38">
+
+<link rel="manifest"
+      href="manifest.json">
+
+<title>AgriSecure - Smart Farmer</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    margin:0;
+    background:#eef8ef;
+    color:#173b24;
+}
+
+header{
+    background:#176b38;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+header h1{
+    margin:0;
+    font-size:32px;
+}
+
+.container{
+    width:92%;
+    max-width:850px;
+    margin:25px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    margin-bottom:20px;
+    border-radius:16px;
+    box-shadow:0 4px 15px #0002;
+}
+
+h2{
+    color:#176b38;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    margin-top:12px;
+}
+
+input,
+select,
+textarea{
+
+    width:100%;
+    padding:13px;
+    margin:8px 0 15px;
+
+    border:1px solid #aaa;
+    border-radius:8px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+button{
+
+    width:100%;
+    padding:14px;
+
+    border:0;
+    border-radius:9px;
+
+    background:#198754;
+    color:white;
+
+    font-size:16px;
+    margin-top:8px;
+
+    cursor:pointer;
+}
+
+button:hover{
+    background:#126b42;
+}
+
+.fingerprint{
+
+    font-size:70px;
+    text-align:center;
+    padding:15px;
+}
+
+.tamil{
+    background:#e67e22;
+}
+
+.tamil:hover{
+    background:#c65f0c;
+}
+
+.voice{
+    background:#6f42c1;
+}
+
+.clear{
+    background:#c62828;
+}
+
+.install{
+    background:#0d6efd;
+}
+
+#dashboard{
+    display:none;
+}
+
+#preview{
+
+    width:100%;
+    max-height:300px;
+
+    object-fit:contain;
+
+    display:none;
+
+    border-radius:10px;
+}
+
+#result{
+    display:none;
+}
+
+.result{
+
+    background:#f3faf4;
+
+    padding:14px;
+
+    margin:10px 0;
+
+    border-radius:9px;
+
+    line-height:1.6;
+
+    border-left:5px solid #198754;
+}
+
+.alert{
+
+    padding:18px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    line-height:1.6;
+}
+
+.high{
+
+    background:#ffebee;
+    color:#b71c1c;
+}
+
+.medium{
+
+    background:#fff3cd;
+    color:#8a5a00;
+}
+
+.low{
+
+    background:#e8f5e9;
+    color:#176b38;
+}
+
+.history{
+
+    background:#f5f8f5;
+
+    padding:15px;
+
+    margin:10px 0;
+
+    border-left:5px solid #198754;
+
+    border-radius:9px;
+
+    line-height:1.7;
+}
+
+.success{
+
+    color:#198754;
+    font-weight:bold;
+}
+
+.error{
+
+    color:#c62828;
+    font-weight:bold;
+}
+
+.confidence{
+
+    height:12px;
+
+    background:#ddd;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    margin-top:8px;
+}
+
+.confidenceBar{
+
+    height:100%;
+
+    background:#198754;
+
+    width:0%;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>🌱 AgriSecure</h1>
+
+<p>👨‍🌾 Smart Farmer Crop Doctor</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- INSTALL -->
+
+<div class="card">
+
+<button
+id="installBtn"
+class="install"
+style="display:none;">
+
+📲 Install AgriSecure App
+
+</button>
+
+</div>
+
+
+<!-- LOGIN -->
+
+<div class="card"
+     id="loginPage">
+
+<h2>
+🔐 Farmer Fingerprint Login
+</h2>
+
+<label>
+Farmer Name
+</label>
+
+<input
+type="text"
+id="farmerName"
+placeholder="Enter farmer name">
+
+<div class="fingerprint">
+👆
+</div>
+
+<button
+onclick="createFingerprint()">
+
+👆 Create Fingerprint ID
+
+</button>
+
+<button
+onclick="loginFingerprint()">
+
+🔐 Login with Fingerprint
+
+</button>
+
+<p id="loginMessage"></p>
+
+</div>
+
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard">
+
+
+<!-- FARMER -->
+
+<div class="card">
+
+<h2>
+✅ Login Successful
+</h2>
+
+<p>
+👨‍🌾 Farmer:
+<b id="showFarmer"></b>
+</p>
+
+<p>
+🆔 Fingerprint ID:
+<b id="showID"></b>
+</p>
+
+<p class="success">
+
+🔓 Secure farmer login successful!
+
+</p>
+
+</div>
+
+
+
+<!-- PHOTO -->
+
+<div class="card">
+
+<h2>
+📷 Upload Crop Photo
+</h2>
+
+<input
+type="file"
+id="cropPhoto"
+accept="image/*"
+onchange="showPhoto()">
+
+<img
+id="preview">
+
+</div>
+
+
+
+<!-- CROP -->
+
+<div class="card">
+
+<h2>
+🌱 Crop Details
+</h2>
+
+<label>
+Crop Name
+</label>
+
+<select id="crop">
+
+<option value="tomato">
+🍅 Tomato
+</option>
+
+<option value="rice">
+🌾 Rice
+</option>
+
+<option value="cotton">
+🌿 Cotton
+</option>
+
+</select>
+
+
+<label>
+🌦️ Climate
+</label>
+
+<select id="climate">
+
+<option value="normal">
+☀️ Normal
+</option>
+
+<option value="rainy">
+🌧️ Rainy
+</option>
+
+<option value="humid">
+💧 Humid
+</option>
+
+<option value="hot">
+🔥 Hot
+</option>
+
+</select>
+
+</div>
+
+
+
+<!-- VOICE -->
+
+<div class="card">
+
+<h2>
+🎙️ தமிழ் அறிகுறிகள்
+</h2>
+
+<p>
+தமிழில் பயிரின் அறிகுறிகளைப் பேசுங்கள்.
+</p>
+
+<button
+class="tamil"
+onclick="startTamilVoice()">
+
+🎙️ தமிழ் அறிகுறிகளை பதிவு செய்யவும்
+
+</button>
+
+<textarea
+id="symptom"
+rows="4"
+placeholder="உதாரணம்: இலைகளில் பழுப்பு புள்ளிகள்">
+</textarea>
+
+<p id="voiceStatus"></p>
+
+</div>
+
+
+
+<!-- ANALYZE -->
+
+<div class="card">
+
+<button
+onclick="analyzeDisease()">
+
+🤖 Analyze Disease
+
+</button>
+
+</div>
+
+
+
+<!-- RESULT -->
+
+<div class="card"
+     id="result">
+
+<h2>
+🔎 Crop Disease Report
+</h2>
+
+<div class="result">
+
+🌱 <b>Crop:</b>
+
+<span id="resultCrop"></span>
+
+</div>
+
+
+<div class="result">
+
+🎙️ <b>Symptoms:</b>
+
+<span id="resultSymptoms"></span>
+
+</div>
+
+
+<div class="result">
+
+🦠 <b>Disease:</b>
+
+<span id="resultDisease"></span>
+
+</div>
+
+
+<div class="result">
+
+💊 <b>Medicine / Treatment:</b>
+
+<span id="resultMedicine"></span>
+
+</div>
+
+
+<div class="result">
+
+📅 <b>Required Days:</b>
+
+<span id="resultDays"></span>
+
+</div>
+
+
+<div class="result">
+
+💡 <b>Solution:</b>
+
+<span id="resultSolution"></span>
+
+</div>
+
+
+<div class="result">
+
+⚠️ <b>Severity:</b>
+
+<span id="resultSeverity"></span>
+
+</div>
+
+
+<div class="result">
+
+🌦️ <b>Climate Risk:</b>
+
+<span id="resultRisk"></span>
+
+</div>
+
+
+<div class="result">
+
+🤖 <b>Confidence:</b>
+
+<span id="resultConfidence"></span>%
+
+<div class="confidence">
+
+<div
+id="confidenceBar"
+class="confidenceBar">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- ALERT -->
+
+<div class="card">
+
+<h2>
+🚨 Disease Alert
+</h2>
+
+<div
+id="diseaseAlert"
+class="alert low">
+
+🟢 No active disease alert.
+
+</div>
+
+</div>
+
+
+
+<!-- TAMIL REPORT -->
+
+<div class="card">
+
+<h2>
+🔊 தமிழ் குரல் அறிக்கை
+</h2>
+
+<button
+class="tamil"
+onclick="speakReport()">
+
+🔊 அறிக்கையை தமிழில் கேட்க
+
+</button>
+
+<p id="speakerStatus"></p>
+
+</div>
+
+
+
+<!-- HISTORY -->
+
+<div class="card">
+
+<h2>
+📊 Farmer History
+</h2>
+
+<div id="history">
+
+📭 No history available.
+
+</div>
+
+<button
+class="clear"
+onclick="clearHistory()">
+
+🗑️ Clear History
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+// ==========================================
+// FINGERPRINT ID
+// ==========================================
+
+function createFingerprint(){
+
+    const name =
+        document.getElementById(
+            "farmerName"
+        ).value.trim();
+
+
+    if(!name){
+
+        document.getElementById(
+            "loginMessage"
+        ).innerText =
+        "❌ Please enter farmer name.";
+
+        return;
+    }
+
+
+    const id =
+        "AGR-" +
+        Math.floor(
+            10000000 +
+            Math.random()*90000000
+        );
+
+
+    localStorage.setItem(
+        "farmerName",
+        name
+    );
+
+    localStorage.setItem(
+        "fingerprintID",
+        id
+    );
+
+
+    document.getElementById(
+        "loginMessage"
+    ).innerHTML =
+
+    "✅ Fingerprint ID created: <b>"
+    + id +
+    "</b>";
+}
+
+
+
+// ==========================================
+// LOGIN
+// ==========================================
+
+function loginFingerprint(){
+
+    const name =
+        localStorage.getItem(
+            "farmerName"
+        );
+
+    const id =
+        localStorage.getItem(
+            "fingerprintID"
+        );
+
+
+    if(!name || !id){
+
+        document.getElementById(
+            "loginMessage"
+        ).innerText =
+        "❌ Create Fingerprint ID first.";
+
+        return;
+    }
+
+
+    document.getElementById(
+        "loginMessage"
+    ).innerText =
+    "🔄 Verifying fingerprint...";
+
+
+    setTimeout(function(){
+
+        document.getElementById(
+            "loginPage"
+        ).style.display="none";
+
+
+        document.getElementById(
+            "dashboard"
+        ).style.display="block";
+
+
+        document.getElementById(
+            "showFarmer"
+        ).innerText=name;
+
+
+        document.getElementById(
+            "showID"
+        ).innerText=id;
+
+
+        loadHistory();
+
+    },1200);
+}
+
+
+
+// ==========================================
+// IMAGE
+// ==========================================
+
+function showPhoto(){
+
+    const file =
+        document.getElementById(
+            "cropPhoto"
+        ).files[0];
+
+
+    const image =
+        document.getElementById(
+            "preview"
+        );
+
+
+    if(file){
+
+        image.src =
+            URL.createObjectURL(file);
+
+        image.style.display="block";
+    }
+}
+
+
+
+// ==========================================
+// TAMIL VOICE
+// ==========================================
+
+function startTamilVoice(){
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if(!SpeechRecognition){
+
+        document.getElementById(
+            "voiceStatus"
+        ).innerText =
+        "❌ Voice recognition is not supported.";
+
+        return;
+    }
+
+
+    const recognition =
+        new SpeechRecognition();
+
+
+    recognition.lang="ta-IN";
+
+    recognition.continuous=false;
+
+    recognition.interimResults=false;
+
+
+    document.getElementById(
+        "voiceStatus"
+    ).innerText =
+    "🎙️ கேட்கிறது... பேசுங்கள்.";
+
+
+    recognition.start();
+
+
+    recognition.onresult=function(event){
+
+        const text =
+            event.results[0][0].transcript;
+
+
+        document.getElementById(
+            "symptom"
+        ).value=text;
+
+
+        document.getElementById(
+            "voiceStatus"
+        ).innerText =
+        "✅ அறிகுறிகள் பதிவு செய்யப்பட்டன.";
+    };
+
+
+    recognition.onerror=function(){
+
+        document.getElementById(
+            "voiceStatus"
+        ).innerText =
+        "❌ மீண்டும் முயற்சிக்கவும்.";
+    };
+}
+
+
+
+// ==========================================
+// DISEASE ANALYSIS
+// ==========================================
+
+function analyzeDisease(){
+
+    const crop =
+        document.getElementById(
+            "crop"
+        ).value;
+
+
+    const climate =
+        document.getElementById(
+            "climate"
+        ).value;
+
+
+    const symptom =
+        document.getElementById(
+            "symptom"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    let disease="Disease Not Identified";
+
+    let medicine=
+    "No treatment identified";
+
+    let days="Not available";
+
+    let solution=
+    "Please consult an agricultural expert.";
+
+    let severity="Unknown";
+
+    let risk="Needs Inspection";
+
+    let confidence=30;
+
+
+
+    // TOMATO
+
+    if(
+        crop==="tomato" &&
+        (
+            symptom.includes("spot") ||
+            symptom.includes("brown") ||
+            symptom.includes("பழுப்பு") ||
+            symptom.includes("புள்ளி")
+        )
+    ){
+
+        disease="Early Blight";
+
+        medicine=
+        "Locally approved treatment for tomato early blight";
+
+        days=
+        "Follow the approved product label";
+
+        solution=
+        "Remove affected leaves and improve air circulation.";
+
+        confidence=92;
+
+
+        if(
+            climate==="humid" ||
+            climate==="rainy"
+        ){
+
+            severity="High";
+            risk="High";
+
+        }else{
+
+            severity="Medium";
+            risk="Medium";
+        }
+
+    }
+
+
+
+    // RICE
+
+    else if(
+        crop==="rice" &&
+        (
+            symptom.includes("brown") ||
+            symptom.includes("spot") ||
+            symptom.includes("பழுப்பு")
+        )
+    ){
+
+        disease="Brown Spot";
+
+        medicine=
+        "Locally approved treatment for rice brown spot";
+
+        days=
+        "Follow the approved product label";
+
+        solution=
+        "Maintain balanced crop nutrition and good field management.";
+
+        confidence=90;
+
+
+        if(climate==="rainy"){
+
+            severity="High";
+            risk="High";
+
+        }else{
+
+            severity="Medium";
+            risk="Medium";
+        }
+
+    }
+
+
+
+    // COTTON
+
+    else if(
+        crop==="cotton" &&
+        (
+            symptom.includes("curl") ||
+            symptom.includes("yellow") ||
+            symptom.includes("சுருள்")
+        )
+    ){
+
+        disease="Cotton Leaf Curl";
+
+        medicine=
+        "Locally approved whitefly-management treatment";
+
+        days=
+        "Follow local agricultural recommendations";
+
+        solution=
+        "Check for whiteflies and follow integrated pest-management advice.";
+
+        confidence=87;
+
+        severity="High";
+
+        risk=
+        climate==="hot"
+        ? "High"
+        : "Medium";
+    }
+
+
+
+    // DISPLAY
+
+    document.getElementById(
+        "resultCrop"
+    ).innerText=crop;
+
+
+    document.getElementById(
+        "resultSymptoms"
+    ).innerText=
+        symptom ||
+        "No symptom recorded";
+
+
+    document.getElementById(
+        "resultDisease"
+    ).innerText=disease;
+
+
+    document.getElementById(
+        "resultMedicine"
+    ).innerText=medicine;
+
+
+    document.getElementById(
+        "resultDays"
+    ).innerText=days;
+
+
+    document.getElementById(
+        "resultSolution"
+    ).innerText=solution;
+
+
+    document.getElementById(
+        "resultSeverity"
+    ).innerText=severity;
+
+
+    document.getElementById(
+        "resultRisk"
+    ).innerText=risk;
+
+
+    document.getElementById(
+        "resultConfidence"
+    ).innerText=confidence;
+
+
+    document.getElementById(
+        "confidenceBar"
+    ).style.width=
+        confidence+"%";
+
+
+    document.getElementById(
+        "result"
+    ).style.display="block";
+
+
+    createAlert(
+        disease,
+        severity,
+        risk
+    );
+
+
+    // HISTORY
+
+    const report={
+
+        crop:crop,
+
+        symptoms:symptom,
+
+        disease:disease,
+
+        medicine:medicine,
+
+        days:days,
+
+        solution:solution,
+
+        severity:severity,
+
+        risk:risk,
+
+        confidence:confidence,
+
+        date:new Date().toLocaleString()
+
+    };
+
+
+    let history =
+        JSON.parse(
+            localStorage.getItem(
+                "agriHistory"
+            )
+        ) || [];
+
+
+    history.unshift(report);
+
+    history=history.slice(0,20);
+
+
+    localStorage.setItem(
+        "agriHistory",
+        JSON.stringify(history)
+    );
+
+
+    loadHistory();
+}
+
+
+
+// ==========================================
+// DISEASE ALERT
+// ==========================================
+
+function createAlert(
+    disease,
+    severity,
+    risk
+){
+
+    const box =
+        document.getElementById(
+            "diseaseAlert"
+        );
+
+
+    if(
+        severity==="High" ||
+        risk==="High"
+    ){
+
+        box.className="alert high";
+
+
+        box.innerHTML=`
+
+        🔴 HIGH DISEASE ALERT
+
+        <br><br>
+
+        🦠 Disease:
+        ${disease}
+
+        <br>
+
+        ⚠️ Severity:
+        ${severity}
+
+        <br>
+
+        🌦️ Climate Risk:
+        ${risk}
+
+        <br><br>
+
+        👨‍🌾 Please inspect the crop
+        and consult a qualified
+        agricultural expert.
+
+        `;
+
+    }
+
+    else if(severity==="Medium"){
+
+        box.className="alert medium";
+
+
+        box.innerHTML=`
+
+        🟠 MEDIUM DISEASE ALERT
+
+        <br><br>
+
+        🦠 Disease:
+        ${disease}
+
+        <br>
+
+        👀 Continue monitoring
+        the crop.
+
+        `;
+
+    }
+
+    else{
+
+        box.className="alert low";
+
+        box.innerHTML=
+        "🟢 No high-risk disease alert.";
+    }
+}
+
+
+
+// ==========================================
+// HISTORY
+// ==========================================
+
+function loadHistory(){
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "agriHistory"
+            )
+        ) || [];
+
+
+    const box =
+        document.getElementById(
+            "history"
+        );
+
+
+    if(history.length===0){
+
+        box.innerText=
+        "📭 No history available.";
+
+        return;
+    }
+
+
+    box.innerHTML="";
+
+
+    history.forEach(
+        function(item,index){
+
+            box.innerHTML+=`
+
+            <div class="history">
+
+            <b>📌 Report ${index+1}</b>
+
+            <br>
+
+            🌱 Crop:
+            ${item.crop}
+
+            <br>
+
+            🎙️ Symptoms:
+            ${item.symptoms || "Not recorded"}
+
+            <br>
+
+            🦠 Disease:
+            ${item.disease}
+
+            <br>
+
+            💊 Treatment:
+            ${item.medicine}
+
+            <br>
+
+            📅 Days:
+            ${item.days}
+
+            <br>
+
+            ⚠️ Severity:
+            ${item.severity}
+
+            <br>
+
+            🚨 Risk:
+            ${item.risk}
+
+            <br>
+
+            🤖 Confidence:
+            ${item.confidence}%
+
+            <br>
+
+            🕒 Date:
+            ${item.date}
+
+            </div>
+
+            `;
+        }
+    );
+}
+
+
+
+// ==========================================
+// TAMIL REPORT
+// ==========================================
+
+function speakReport(){
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "agriHistory"
+            )
+        ) || [];
+
+
+    if(history.length===0){
+
+        speakTamilText(
+            "விவசாயி வரலாறு இல்லை."
+        );
+
+        return;
+    }
+
+
+    const item=history[0];
+
+
+    const text=
+
+    "வணக்கம் விவசாயி. " +
+
+    "உங்கள் பயிர் " +
+    item.crop +
+    ". " +
+
+    "கண்டறியப்பட்ட நோய் " +
+    item.disease +
+    ". " +
+
+    "தீவிரம் " +
+    item.severity +
+    ". " +
+
+    "காலநிலை ஆபத்து " +
+    item.risk +
+    ". " +
+
+    "மருத்துவ சிகிச்சையை பயன்படுத்துவதற்கு முன், "
+    +
+    "தயவுசெய்து அங்கீகரிக்கப்பட்ட தயாரிப்பு லேபிளை "
+    +
+    "பின்பற்றவும்.";
+
+    
+    speakTamilText(text);
+}
+
+
+function speakTamilText(text){
+
+    if(
+        !("speechSynthesis" in window)
+    )
+        return;
+
+
+    window.speechSynthesis.cancel();
+
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+
+    speech.lang="ta-IN";
+
+    speech.rate=0.85;
+
+
+    window.speechSynthesis.speak(
+        speech
+    );
+
+
+    document.getElementById(
+        "speakerStatus"
+    ).innerText=
+    "🔊 தமிழ் அறிக்கை வாசிக்கப்படுகிறது...";
+}
+
+
+
+// ==========================================
+// CLEAR HISTORY
+// ==========================================
+
+function clearHistory(){
+
+    localStorage.removeItem(
+        "agriHistory"
+    );
+
+    loadHistory();
+
+
+    document.getElementById(
+        "diseaseAlert"
+    ).className="alert low";
+
+
+    document.getElementById(
+        "diseaseAlert"
+    ).innerText=
+    "🟢 No active disease alert.";
+}
+
+
+
+// ==========================================
+// PWA INSTALL
+// ==========================================
+
+let deferredPrompt;
+
+
+window.addEventListener(
+    "beforeinstallprompt",
+    function(event){
+
+        event.preventDefault();
+
+        deferredPrompt=event;
+
+
+        const btn =
+            document.getElementById(
+                "installBtn"
+            );
+
+
+        btn.style.display="block";
+    }
+);
+
+
+document.getElementById(
+    "installBtn"
+).addEventListener(
+    "click",
+    async function(){
+
+        if(!deferredPrompt){
+
+            alert(
+                "Install option is not available yet."
+            );
+
+            return;
+        }
+
+
+        deferredPrompt.prompt();
+
+
+        await deferredPrompt.userChoice;
+
+
+        deferredPrompt=null;
+
+
+        document.getElementById(
+            "installBtn"
+        ).style.display="none";
+    }
+);
+
+
+
+// ==========================================
+// SERVICE WORKER
+// ==========================================
+
+if(
+    "serviceWorker" in navigator
+){
+
+    window.addEventListener(
+        "load",
+        function(){
+
+            navigator.serviceWorker
+            .register("sw.js")
+
+            .then(function(){
+
+                console.log(
+                    "AgriSecure offline mode ready."
+                );
+
+            })
+
+            .catch(function(error){
+
+                console.log(
+                    "Service Worker error:",
+                    error
+                );
+
+            });
+
+        }
+    );
+}
+
+</script>
+
+</body>
+</html>
